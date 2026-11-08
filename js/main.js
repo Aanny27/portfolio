@@ -73,6 +73,16 @@ document.addEventListener("DOMContentLoaded", () => {
   applyPortfolioConfig();
 
   /* --------------------------------------------------------------------------
+     2.5. THEME CONTROLLER (SOFT CYBER LIGHT <-> TACTICAL SOC DARK MODE)
+     -------------------------------------------------------------------------- */
+  const THEME_STORAGE_KEY = "soft_cyber_theme";
+  const themeToggleBtn = document.getElementById("theme-toggle-btn");
+  const introThemeToggleBtn = document.getElementById("intro-theme-toggle");
+  const themeLabels = document.querySelectorAll("[data-theme-label]");
+  const bgVideo = document.getElementById("bg-video");
+  const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+
+  /* --------------------------------------------------------------------------
      3. OPENING INTRO — CINEMATIC SOC VIDEO & FALLBACK CONTROLLER
      -------------------------------------------------------------------------- */
   const introOverlay = document.getElementById("intro-overlay");
@@ -84,6 +94,79 @@ document.addEventListener("DOMContentLoaded", () => {
   const videoStatusNote = document.getElementById("video-status-note");
   const introTimecode = document.getElementById("intro-timecode");
   let timecodeInterval = null;
+
+  function syncAmbientBgVideo(theme) {
+    if (!bgVideo) return;
+    if (theme === "dark" && !prefersReducedMotion) {
+      bgVideo.muted = true;
+      const playPromise = bgVideo.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {});
+      }
+    } else {
+      bgVideo.pause();
+    }
+  }
+
+  function syncIntroVideoSource(theme, shouldPlay) {
+    if (!introVideo) return;
+    const targetSrc =
+      theme === "dark"
+        ? introVideo.getAttribute("data-video-dark") || "assets/videos/soc_showreel.mp4"
+        : introVideo.getAttribute("data-video-light") || "assets/videos/soc_showreel_cute.mp4";
+
+    if (introVideo.getAttribute("src") !== targetSrc) {
+      introVideo.setAttribute("src", targetSrc);
+      introVideo.load();
+    }
+
+    if (shouldPlay && introOverlay && !introOverlay.classList.contains("is-hidden")) {
+      attemptVideoPlayback();
+    }
+  }
+
+  function applyTheme(theme, persist = true) {
+    const normalized = theme === "dark" ? "dark" : "light";
+    if (normalized === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.removeAttribute("data-theme");
+    }
+
+    if (themeColorMeta) {
+      themeColorMeta.setAttribute("content", normalized === "dark" ? "#050A10" : "#FFF5F7");
+    }
+
+    themeLabels.forEach((lbl) => {
+      lbl.textContent = normalized === "dark" ? "LIGHT // CUTE" : "DARK // SOC";
+    });
+
+    syncIntroVideoSource(normalized, true);
+    syncAmbientBgVideo(normalized);
+
+    if (persist) {
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, normalized);
+      } catch (e) {}
+    }
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    applyTheme(current === "dark" ? "light" : "dark", true);
+  }
+
+  // Load saved theme preference (defaults to light if none saved)
+  let initialTheme = "light";
+  try {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    if (savedTheme === "dark" || savedTheme === "light") {
+      initialTheme = savedTheme;
+    }
+  } catch (e) {}
+
+  if (themeToggleBtn) themeToggleBtn.addEventListener("click", toggleTheme);
+  if (introThemeToggleBtn) introThemeToggleBtn.addEventListener("click", toggleTheme);
 
   function formatTimecode(seconds) {
     const mins = Math.floor(seconds / 60);
@@ -191,7 +274,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Initialize intro on page load
+  // Initialize theme and intro on page load
+  applyTheme(initialTheme, false);
   attemptVideoPlayback();
   startHudTimecode();
 

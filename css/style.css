@@ -381,7 +381,7 @@ button {
 }
 
 .hud-top-left { top: 0; left: 0; }
-.hud-top-right { top: 0; right: 130px; }
+.hud-top-right { top: 0; right: 280px; }
 .hud-bottom-left { bottom: 0; left: 0; }
 .hud-bottom-right { bottom: 0; right: 0; }
 
@@ -394,11 +394,17 @@ button {
   animation: pulseDot 1.6s infinite ease-in-out;
 }
 
-.btn-skip-top {
+.intro-top-controls {
   position: absolute;
   top: 20px;
   right: 20px;
   z-index: 6;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-skip-top {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -410,7 +416,7 @@ button {
   font-size: 0.84rem;
   font-weight: 600;
   box-shadow: var(--shadow-soft);
-  transition: transform 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .btn-skip-top:hover {
@@ -1843,6 +1849,350 @@ button {
 
   .intro-card-body {
     padding: 24px 18px;
+  }
+}
+
+/* ==========================================================================
+   16. TACTICAL DARK MODE & AMBIENT VIDEO BACKGROUND (soc_showreel.mp4)
+   Palette extracted directly from assets/videos/soc_showreel.mp4:
+     - Deep carbon-navy terminal canvas: #050A10 / #09131F
+     - Phosphor Radar & Matrix Green: #2EE58A / #4FFFA6
+     - Crimson-Coral Alert Nodes: #FF4D5E / #FF7A87
+     - Defended Node & Telemetry Cyan: #38C8FF / #7CC4F8
+   ========================================================================== */
+[data-theme="dark"] {
+  --bg-primary: #050A10;
+  --bg-elevated: rgba(9, 19, 31, 0.82);
+  --bg-soft-pink: rgba(255, 77, 94, 0.14);
+  --bg-soft-mint: rgba(46, 229, 138, 0.13);
+  --bg-soft-blue: rgba(56, 200, 255, 0.13);
+  --bg-soft-lavender: rgba(124, 196, 248, 0.13);
+
+  --text-main: #E6F8F2;
+  --text-secondary: #98BCD2;
+  --text-muted: #5F86A0;
+
+  --accent-pink: #FF4D5E;
+  --accent-pink-dark: #FF7D8A;
+  --accent-mint: #2EE58A;
+  --accent-mint-dark: #4FFFA6;
+  --accent-blue: #38C8FF;
+  --accent-blue-dark: #7CC4F8;
+  --accent-lavender: #56E0E0;
+
+  --border-subtle: rgba(56, 200, 255, 0.24);
+  --border-pink: rgba(255, 77, 94, 0.48);
+  --border-mint: rgba(46, 229, 138, 0.5);
+  --shadow-soft: 0 14px 34px -8px rgba(0, 0, 0, 0.72), 0 0 20px -4px rgba(46, 229, 138, 0.12);
+  --shadow-hover: 0 20px 44px -8px rgba(0, 0, 0, 0.88), 0 0 26px -2px rgba(56, 200, 255, 0.26);
+}
+
+/* Header & Navigation Right Group + Theme Toggle Button */
+.nav-right-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border-radius: var(--radius-pill);
+  background: #FFFFFF;
+  border: 1.5px solid var(--border-mint);
+  color: var(--text-main);
+  font-size: 0.78rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.22s ease, background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.btn-theme-toggle:hover {
+  transform: translateY(-1px);
+  border-color: var(--accent-pink);
+}
+
+.theme-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-mint-dark);
+}
+
+.icon-sun {
+  display: none;
+}
+
+[data-theme="dark"] .icon-moon {
+  display: none;
+}
+
+[data-theme="dark"] .icon-sun {
+  display: block;
+  color: var(--accent-mint);
+}
+
+.theme-toggle-label {
+  color: var(--text-main);
+  font-weight: 700;
+  font-size: 0.72rem;
+}
+
+/* Fixed Ambient Video Background Container */
+.site-video-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+
+[data-theme="dark"] .site-video-bg {
+  opacity: 1;
+  visibility: visible;
+}
+
+.bg-video-element {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.42;
+  filter: saturate(1.15) contrast(1.08);
+}
+
+.bg-video-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(5, 10, 16, 0.58) 0%, rgba(5, 10, 16, 0.86) 80%),
+    linear-gradient(180deg, rgba(5, 10, 16, 0.72) 0%, rgba(5, 10, 16, 0.82) 50%, rgba(5, 10, 16, 0.92) 100%);
+}
+
+.bg-video-scanlines {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(46, 229, 138, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 200, 255, 0.05) 1px, transparent 1px),
+    repeating-linear-gradient(
+      0deg,
+      rgba(0, 0, 0, 0.18) 0px,
+      rgba(0, 0, 0, 0.18) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+  background-size: 36px 36px, 36px 36px, 100% 3px;
+}
+
+/* Dark Mode Surface & Component Refinements */
+[data-theme="dark"] body {
+  background-color: var(--bg-primary);
+  background-image:
+    linear-gradient(to right, rgba(46, 229, 138, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(56, 200, 255, 0.06) 1px, transparent 1px);
+}
+
+[data-theme="dark"] .site-header {
+  background: rgba(5, 11, 18, 0.82);
+  border-bottom: 1px solid rgba(46, 229, 138, 0.24);
+}
+
+[data-theme="dark"] .site-header.scrolled {
+  box-shadow: 0 8px 28px -6px rgba(0, 0, 0, 0.75);
+}
+
+[data-theme="dark"] .card,
+[data-theme="dark"] .soc-console-card {
+  background: var(--bg-elevated);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-color: rgba(56, 200, 255, 0.25);
+}
+
+[data-theme="dark"] .soc-console-card {
+  border-color: rgba(46, 229, 138, 0.45);
+}
+
+[data-theme="dark"] .terminal-window-bar {
+  background: linear-gradient(90deg, rgba(255, 77, 94, 0.2) 0%, rgba(56, 200, 255, 0.18) 52%, rgba(46, 229, 138, 0.22) 100%);
+  border-bottom: 1px solid rgba(46, 229, 138, 0.3);
+}
+
+[data-theme="dark"] .win-status-badge {
+  background: rgba(5, 12, 20, 0.9);
+  color: var(--accent-mint);
+  border-color: var(--border-mint);
+}
+
+[data-theme="dark"] .intro-fallback-scene {
+  background: radial-gradient(circle at 50% 40%, #0B1928 0%, #050A10 70%, #03060A 100%);
+}
+
+[data-theme="dark"] .intro-veil {
+  background: radial-gradient(circle at center, rgba(5, 10, 16, 0.42) 0%, rgba(5, 10, 16, 0.78) 100%);
+}
+
+[data-theme="dark"] .hud-corner {
+  background: rgba(7, 15, 24, 0.82);
+  border-color: rgba(46, 229, 138, 0.42);
+}
+
+[data-theme="dark"] .intro-card {
+  background: rgba(8, 17, 28, 0.86);
+  border-color: rgba(46, 229, 138, 0.55);
+  box-shadow: 0 28px 68px -12px rgba(0, 0, 0, 0.85), 0 0 32px -6px rgba(46, 229, 138, 0.22);
+}
+
+[data-theme="dark"] .btn-skip-top,
+[data-theme="dark"] .btn-theme-toggle,
+[data-theme="dark"] .btn-secondary,
+[data-theme="dark"] .eyebrow-badge,
+[data-theme="dark"] .section-tag,
+[data-theme="dark"] .social-pill,
+[data-theme="dark"] .skills-legend-bar,
+[data-theme="dark"] .project-filter-btn,
+[data-theme="dark"] .btn-link-github,
+[data-theme="dark"] .mobile-menu-toggle {
+  background: rgba(9, 20, 32, 0.88);
+  color: var(--text-main);
+  border-color: rgba(56, 200, 255, 0.32);
+}
+
+[data-theme="dark"] .btn-skip-top:hover,
+[data-theme="dark"] .btn-theme-toggle:hover,
+[data-theme="dark"] .btn-secondary:hover,
+[data-theme="dark"] .social-pill:hover {
+  background: rgba(15, 32, 48, 0.96);
+  border-color: var(--accent-mint);
+  color: var(--accent-mint-dark);
+}
+
+[data-theme="dark"] .btn-primary {
+  background: linear-gradient(135deg, #1EB972 0%, #1F9CE0 55%, #FF4D5E 100%);
+  color: #FFFFFF;
+  box-shadow: 0 8px 24px -4px rgba(46, 229, 138, 0.4);
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  box-shadow: 0 12px 28px -4px rgba(56, 200, 255, 0.55);
+}
+
+[data-theme="dark"] .nav-link:hover,
+[data-theme="dark"] .nav-link.active {
+  color: var(--accent-mint-dark);
+  background: rgba(46, 229, 138, 0.12);
+}
+
+[data-theme="dark"] .nav-link-cta {
+  background: rgba(46, 229, 138, 0.14);
+  border-color: var(--border-mint);
+  color: var(--accent-mint-dark);
+}
+
+[data-theme="dark"] .nav-link-cta:hover,
+[data-theme="dark"] .nav-link-cta.active {
+  background: var(--accent-mint);
+  color: #04100B;
+}
+
+[data-theme="dark"] .project-filter-btn.active,
+[data-theme="dark"] .project-filter-btn:hover {
+  background: var(--accent-mint);
+  color: #04100B;
+  border-color: var(--accent-mint);
+}
+
+[data-theme="dark"] .btn-link-github {
+  border-color: var(--border-mint);
+}
+
+[data-theme="dark"] .btn-link-github:hover {
+  background: var(--accent-mint);
+  color: #04100B;
+}
+
+[data-theme="dark"] .soc-topology-box,
+[data-theme="dark"] .edu-placeholder-item,
+[data-theme="dark"] .skill-tag,
+[data-theme="dark"] .tech-tag-list li,
+[data-theme="dark"] .project-footer,
+[data-theme="dark"] .contact-channel-card {
+  background: rgba(5, 12, 20, 0.78);
+  border-color: rgba(56, 200, 255, 0.2);
+}
+
+[data-theme="dark"] .contact-channel-card:hover {
+  background: rgba(12, 26, 40, 0.95);
+  border-color: var(--accent-mint);
+}
+
+[data-theme="dark"] .thumb-mint {
+  background: linear-gradient(135deg, rgba(46, 229, 138, 0.16) 0%, rgba(6, 14, 23, 0.95) 100%);
+}
+
+[data-theme="dark"] .thumb-blue {
+  background: linear-gradient(135deg, rgba(56, 200, 255, 0.16) 0%, rgba(6, 14, 23, 0.95) 100%);
+}
+
+[data-theme="dark"] .thumb-pink {
+  background: linear-gradient(135deg, rgba(255, 77, 94, 0.16) 0%, rgba(6, 14, 23, 0.95) 100%);
+}
+
+[data-theme="dark"] .thumb-lavender {
+  background: linear-gradient(135deg, rgba(124, 196, 248, 0.16) 0%, rgba(6, 14, 23, 0.95) 100%);
+}
+
+/* Adapt inline SVG fills/strokes in Dark Mode to match soc_showreel.mp4 */
+[data-theme="dark"] .brand-shield path:first-child,
+[data-theme="dark"] .skill-team-icon svg path:first-child,
+[data-theme="dark"] .skill-team-icon svg rect,
+[data-theme="dark"] .skill-team-icon svg circle:first-child,
+[data-theme="dark"] .project-illustration rect,
+[data-theme="dark"] .project-illustration circle[fill="#FFFFFF"],
+[data-theme="dark"] .topo-node circle:first-child {
+  fill: #0A1724 !important;
+}
+
+[data-theme="dark"] .brand-shield circle[fill="#29283A"],
+[data-theme="dark"] .skill-team-icon svg circle[fill="#29283A"] {
+  fill: #E6F8F2 !important;
+}
+
+[data-theme="dark"] .brand-shield path[stroke="#29283A"],
+[data-theme="dark"] .skill-team-icon svg path[stroke="#29283A"],
+[data-theme="dark"] .project-illustration line[stroke="#29283A"],
+[data-theme="dark"] .project-illustration path[stroke="#29283A"],
+[data-theme="dark"] .topo-node path[stroke="#29283A"] {
+  stroke: #E6F8F2 !important;
+}
+
+[data-theme="dark"] .timeline-marker {
+  background: #060E17;
+}
+
+[data-theme="dark"] .site-footer {
+  background: rgba(5, 11, 18, 0.9);
+  border-top: 1px solid rgba(46, 229, 138, 0.24);
+  backdrop-filter: blur(12px);
+}
+
+[data-theme="dark"] .primary-nav {
+  background: transparent;
+}
+
+@media (max-width: 768px) {
+  [data-theme="dark"] .primary-nav {
+    background: rgba(6, 14, 23, 0.96);
+    border-bottom-color: var(--border-mint);
+  }
+
+  .theme-toggle-label {
+    display: none;
   }
 }
 
